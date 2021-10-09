@@ -258,4 +258,45 @@ class MemberRepositoryTest {
         //when
         List<Member> result = memberRepository.findLockByUsername("member1");
     }
+
+    @Test
+    void callCustom() {
+        List<Member> result = memberRepository.findMemberCustom();
+    }
+
+    @Test
+    void projections() {
+        //given
+        Team teamA = new Team("teamA");
+        teamRepository.save(teamA);
+        
+        Member member = memberRepository.save(new Member("member1", 10, teamA));
+        
+        em.flush();
+        em.clear();
+
+        //when
+        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("member1");
+
+        for (UsernameOnly usernameOnly : result) {
+            System.out.println("usernameOnly.getUsername() = " + usernameOnly.getUsername());
+        }
+    }
+
+    @Test
+    void nativeQuery() {
+        //given
+        Team teamA = new Team("teamA");
+        teamRepository.save(teamA);
+
+        Member m1 = memberRepository.save(new Member("m1", 10, teamA));
+        Member m2 = memberRepository.save(new Member("m2", 10, teamA));
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member result = memberRepository.findByNativeQuery("m1");
+        System.out.println("result = " + result);
+    }
 }
